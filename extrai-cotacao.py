@@ -16,18 +16,24 @@ def avisa(cotacao):
 
 if __name__ == "__main__":
 
-    URL_COTACAO = "https://ptax.bcb.gov.br/ptax_internet/consultarUltimaCotacaoDolar.do"
-    cotacao_alvo = 3.75
+    URL_COTACAO = "https://ptax.bcb.gov.br/ptax_internet/consultaBoletim.do?method=consultarBoletim&RadOpcao=3&DATAINI=%s&ChkMoeda=61"
+    primeiro = True
 
     while True:
-        r = requests.get(URL_COTACAO)
+        cotacao_alvo = 3.75
 
-        match = re.search(r"<td.*(\d+,\d+)</td>", r.text)
-        if match:
-            cotacao = float(match.group(1).replace(',', '.'))
-            print "Found! Cotacao is ", cotacao
-            if cotacao < cotacao_alvo:
-                avisa(cotacao)
-        else:
-            print "Not found. Estranho ..."
-        time.sleep(3600)
+        st = time.gmtime()
+        hoje = time.strftime('%d/%m/%Y')
+
+        if st.tm_wday < 5 and (primeiro or (st.tm_hour > 7 and st.tm_hour < 18)):
+
+            r = requests.get(URL_COTACAO % hoje)
+
+            for match in re.finditer(r"<td.*(\d+,\d+)</td>", r.text):
+                cotacao = float(match.group(1).replace(',', '.'))
+                print "Found! Cotacao is ", cotacao
+                if cotacao < cotacao_alvo:
+                    avisa(cotacao)
+
+            primeiro = False
+            time.sleep(3600)
