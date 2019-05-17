@@ -25,12 +25,12 @@ def format_date(string):
     return ret
 
 if __name__ == "__main__":
-    first_url = "http://www.an.gov.br/sian/multinivel/multinivel_consulta5.asp?v_codReferenciaPai_ID=1316324&v_codFundo_ID=&v_nivel=4&v_pula_nivel="
-    if sys.argv[1]:
+    first_url = "http://www.an.gov.br/sian/multinivel/multinivel_consulta4.asp?v_codReferenciaPai_ID=1317714&v_codFundo_ID=1278707&v_nivel=3&v_pula_nivel="
+    if len(sys.argv) > 1:
         first_url = sys.argv[1]
 
     r = requests.get(first_url)
-    s1 = bs4.BeautifulSoup(r.text, "html.parser")
+    s1 = bs4.BeautifulSoup(r.text, "lxml")
 
     pat = re.compile('[^\w ]+')
     p_s = re.compile("\s+")
